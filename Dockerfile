@@ -1,7 +1,7 @@
 FROM amazonlinux:latest
 
 RUN \
-    amazon-linux-extras install aws-nitro-enclaves-cli \
+    yum install -y aws-nitro-enclaves-cli \
     && yum clean all \
     && rm -rf /var/cache/yum
 

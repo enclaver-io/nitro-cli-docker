@@ -5,5 +5,6 @@ RUN \
     && dnf clean all \
     && rm -rf /var/cache/yum
 
+WORKDIR /build
 
 ENTRYPOINT ["nitro-cli"]

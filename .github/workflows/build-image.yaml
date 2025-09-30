@@ -14,6 +14,10 @@ jobs:
     permissions:
       id-token: write # This is required for requesting the JWT
       contents: read  # This is required for actions/checkout
+      attestations: 'write' # To publish the SLSA attestation
+
+    env:
+      IMAGE: public.ecr.aws/s2t1d4c6/enclaver-io/nitro-cli
 
     steps:
       - name: Set up QEMU
@@ -35,8 +39,16 @@ jobs:
           registry-type: public
 
       - name: Build Nitro CLI Image
+        id: build
         uses: docker/build-push-action@v3
         with:
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: public.ecr.aws/s2t1d4c6/enclaver-io/nitro-cli:latest
+          tags: ${{ env.IMAGE }}:latest
+
+      - name: Generate SLSA provenance
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
